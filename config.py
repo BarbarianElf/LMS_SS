@@ -1,7 +1,7 @@
 NOISES_DIR = "./noises/"
 RECORDING_DIR = "./recordings/"
 MAT_DIR = NOISES_DIR + "mat"
-NOISE_NAMES = ['f16']
+NOISE_NAMES = []
 NOISE_FS = 19980
 INT2FLOAT_CONST = 32768.0
 FS = 22050
