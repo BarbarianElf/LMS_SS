@@ -1,11 +1,29 @@
+"""
+utils for RSP project
+
+date created: February 3rd 2021
+
+author: Ziv Zango
+"""
+
 import numpy
 import random
 import adaptfilt
 from matplotlib import pyplot as plt
-from spectral_subtraction import SpectralSubtraction as SS
-
+from spectral_subtraction import SpectralSubtraction
+from scipy.signal import coherence
 import files_utils
 from config import *
+
+
+def get_plt():
+    return plt
+
+
+def calc_alpha(snr, alpha):
+    if (snr >= -5) and (snr <= 20):
+        return alpha - (3 * snr / 20)
+    return alpha
 
 
 def mean_square(x):
@@ -36,7 +54,7 @@ def adaptive_noise_cancellation(noise, signal, filter_size=64, learning_rate=0.1
         y, e, w = adaptfilt.nlms(noise, noise + signal, filter_size, learning_rate)
     else:
         y, e, w = adaptfilt.lms(noise, noise + signal, filter_size, learning_rate)
-    return numpy.concatenate((e[0:filter_size-1], e))
+    return numpy.concatenate((e[0:filter_size - 1], e))
 
 
 def get_signals(file, snr, noise):
@@ -54,7 +72,7 @@ if __name__ == '__main__':
         print(noise_name)
         for index, snr_db in enumerate(SNR_LIST):
             print(f"SNR dB: {snr_db}")
-            re, n = get_signals("medium_sentence.wav", snr_db, noise_name)
+            re, n = get_signals("word.wav", snr_db, noise_name)
             # filter_size = 64
             filtered_signal = adaptive_noise_cancellation(n, re, 32, 0.01, normalized=False)
             # y, e, w = adaptfilt.nlms(n, de, filter_size, 0.1)
@@ -67,16 +85,24 @@ if __name__ == '__main__':
             plt.title(f"speech - noisy - filtered\nNOISE: {noise_name}")
             plt.xlabel("time (sec)")
             plt.legend()
-            plt.show()
             print(calc_snr_after(re, filtered_signal))
-            new = SS(filtered_signal, n).calculate()
+            new = SpectralSubtraction(filtered_signal, n).calculate()
+            new = numpy.pad(new, (0, abs(len(re)-len(new))))
             plt.figure(index+1)
             plt.plot(numpy.linspace(0, len(re) / FS, num=len(re)), re, label="SIGNAL")
-            plt.plot(numpy.linspace(0, len(re) / FS, num=len(re)), new, label="SIGNAL+NOISE+LMS+SS")
+            plt.plot(numpy.linspace(0, len(re) / FS, num=len(re)), new, label=f"SIGNAL+NOISE({snr_db}dB)+LMS+SS")
+            plt.title(f"speech - filtered & SS\nNOISE: {noise_name}")
+            plt.xlabel("time (sec)")
             plt.legend()
+            a, a1 = coherence(new, re, fs=FS)
+            b, b1 = coherence(filtered_signal, re, fs=FS)
+            plt.figure()
+            plt.plot(a, a1, label='LMS-SS')
+            plt.plot(b, b1, label='LMS')
+            print("hi")
+            plt.show()
             files_utils.save_data_to_wav(re + n, 'noisy')
             files_utils.save_data_to_wav(filtered_signal, 'afterLMS')
             files_utils.save_data_to_wav(new, 'afterLMSSS')
-            plt.show()
             print(calc_snr_after(re, new))
 

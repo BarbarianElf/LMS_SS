@@ -1,3 +1,11 @@
+"""
+Main for RSP project
+
+date created: February 3rd 2021
+
+author: Ziv Zango
+"""
+
 import numpy
 from scipy.signal import coherence
 
@@ -82,48 +90,50 @@ if __name__ == '__main__':
     plt = utils.get_plt()
     files_utils.handle_folder(RESULTS_DIR)
     # Only for the first time: Coverts mat file to wav
-    # for file in files_utils.get_files(MAT_DIR, "mat"):
-    #     files_utils.convert_mat_to_wav(MAT_DIR + file, NOISES_DIR, fs=NOISE_FS)
+    for file in files_utils.get_files(MAT_DIR, "mat"):
+        files_utils.convert_mat_to_wav(MAT_DIR + file, NOISES_DIR, fs=NOISE_FS)
 
     # Get Noises names from noises wav files directory into NOISE_NAMES list
     get_noises_names(NOISES_DIR)
 
     # Get the optimal LEARNING RATE and FILTER SIZE for LMS
-    # lr_list, f_size_list = [], []
-    # for snr in SNR_LIST:
-    #     for noisy in NOISE_NAMES:
-    #         learning_rate, filter_size = optimized_lms_filter(noisy, snr)
-    #         lr_list.append(learning_rate)
-    #         f_size_list.append(filter_size)
-    # learning_rate = numpy.mean(lr_list)
-    # filter_size = numpy.mean(f_size_list)
-    # print(f"Average learning rate: {learning_rate}\nAverage filter size: {filter_size}")
+    lr_list, f_size_list = [], []
+    for snr in SNR_LIST:
+        for noisy in NOISE_NAMES:
+            learning_rate, filter_size = optimized_lms_filter(noisy, snr)
+            lr_list.append(learning_rate)
+            f_size_list.append(filter_size)
+    learning_rate = numpy.mean(lr_list)
+    filter_size = numpy.mean(f_size_list)
+    print(f"Average learning rate: {learning_rate}\nAverage filter size: {filter_size}")
 
     # Get the optimal alpha for Spectral Subtraction
-    # alpha_constant, alpha_depended_snr = 0, 0
-    # for snr in SNR_LIST:
-    #     for noisy in NOISE_NAMES:
-    #         if optimized_ss_after_lms(noisy, snr):
-    #             alpha_constant += 1
-    #         else:
-    #             alpha_depended_snr += 1
-    # if alpha_constant > alpha_depended_snr:
-    #     print("Alpha constant (4) preferred")
-    # else:
-    #     print("Alpha depended SNR preferred")
+    alpha_constant, alpha_depended_snr = 0, 0
+    for snr in SNR_LIST:
+        for noisy in NOISE_NAMES:
+            if optimized_ss_after_lms(noisy, snr):
+                alpha_constant += 1
+            else:
+                alpha_depended_snr += 1
+    if alpha_constant > alpha_depended_snr:
+        print("Alpha constant (4) preferred")
+    else:
+        print("Alpha depended SNR preferred")
 
     # Get which better LMS or NLMS
-    # lms, nlms = 0, 0
-    # for snr in SNR_LIST:
-    #     for noisy in NOISE_NAMES:
-    #         if lms_or_nlms(noisy, snr):
-    #             lms += 1
-    #         else:
-    #             nlms += 1
-    # if lms > nlms:
-    #     print("LMS Filter preferred")
-    # else:
-    #     print("NLMS Filter preferred")
+    lms, nlms = 0, 0
+    for snr in SNR_LIST:
+        for noisy in NOISE_NAMES:
+            if lms_or_nlms(noisy, snr):
+                lms += 1
+            else:
+                nlms += 1
+    if lms > nlms:
+        print("LMS Filter preferred")
+    else:
+        print("NLMS Filter preferred")
+
+    # The Experiment
     k = 0
     for index, record in enumerate(files_utils.get_files(RECORDING_DIR, "wav")):
         name = record.split('.')[0]

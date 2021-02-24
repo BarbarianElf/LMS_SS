@@ -1,3 +1,10 @@
+"""
+config file for RSP project
+
+date created: February 3rd 2021
+
+author: Ziv Zango
+"""
 NOISES_DIR = "./noises/"
 RECORDING_DIR = "./recordings/"
 MAT_DIR = NOISES_DIR + "mat"

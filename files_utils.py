@@ -1,3 +1,11 @@
+"""
+files utils for RSP project
+
+date created: February 3rd 2021
+
+author: Ziv Zango
+"""
+
 import os
 import scipy.io
 import numpy

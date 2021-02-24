@@ -1,5 +1,9 @@
 """
-ssss
+Spectral Subtraction class file
+
+date created: February 4rd 2021
+
+author: Ziv Zango
 """
 import numpy
 import librosa
