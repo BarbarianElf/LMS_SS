@@ -36,3 +36,8 @@ def convert_mat_to_wav(file, path_destination, fs):
 
 def save_data_to_wav(data, name, fs=22050, path=os.path.dirname(os.path.abspath(__file__))):
     soundfile.write(f"{path}\\{name}.wav", data, fs)
+
+
+def handle_folder(dir_name):
+    os.makedirs(dir_name, exist_ok=True)
+    return True
