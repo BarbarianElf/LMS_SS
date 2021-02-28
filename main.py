@@ -175,6 +175,9 @@ if __name__ == '__main__':
                 _, c_lms_ss = coherence(record_data, lms_ss_signal)
                 snr_lms_ss_list.append(snr_after_lms_ss)
                 c_lms_ss_list.append(numpy.mean(c_lms_ss[1:48 * 4]))
+                # files_utils.save_data_to_wav(record_data + noise_data, 'noisy')
+                # files_utils.save_data_to_wav(filtered_lms_signal, 'afterLMS')
+                # files_utils.save_data_to_wav(lms_ss_signal, 'afterLMSSS')
             plt.figure(index + k)
             plt.plot(SNR_LIST, snr_lms_list,
                      color=COLORS[marker],
